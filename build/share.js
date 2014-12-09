@@ -199,7 +199,11 @@ Share = (function(_super) {
 
   Share.prototype.setup = function(element, opts) {
     var index, instance, instances, _i, _len;
-    instances = document.querySelectorAll(element);
+    if (element.nodeType) {
+      instances = [element];
+    } else {
+      instances = document.querySelectorAll(element);
+    }
     this.extend(this.config, opts, true);
     this.set_global_configuration();
     this.normalize_network_configuration();
@@ -219,20 +223,21 @@ Share = (function(_super) {
   };
 
   Share.prototype.setup_instance = function(element, index) {
-    var button, instance, label, network, networks, _i, _len, _results,
+    var button, instance, network, networks, _i, _len, _results,
       _this = this;
-    instance = document.querySelectorAll(element)[index];
+    if (element.nodeType) {
+      instance = element;
+    } else {
+      instance = document.querySelectorAll(element)[index];
+    }
     this.hide(instance);
     this.add_class(instance, "sharer-" + index);
-    instance = document.querySelectorAll(element)[index];
-    this.inject_css(instance);
     this.inject_html(instance);
     this.show(instance);
-    label = instance.getElementsByTagName("label")[0];
     button = instance.getElementsByClassName("social")[0];
     networks = instance.getElementsByTagName('li');
     this.add_class(button, "networks-" + this.config.enabled_networks);
-    label.addEventListener("click", function() {
+    instance.addEventListener("click", function() {
       return _this.event_toggle(button);
     });
     _this = this;
@@ -287,11 +292,15 @@ Share = (function(_super) {
   };
 
   Share.prototype["public"] = function(action) {
-    var button, index, instance, _i, _len, _ref, _results;
-    _ref = document.querySelectorAll(this.element);
+    var button, elements, index, instance, _i, _len, _results;
+    if (this.element.nodeType) {
+      elements = [this.element];
+    } else {
+      elements = document.querySelectorAll(this.element);
+    }
     _results = [];
-    for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
-      instance = _ref[index];
+    for (index = _i = 0, _len = elements.length; _i < _len; index = ++_i) {
+      instance = elements[index];
       button = instance.getElementsByClassName("social")[0];
       _results.push(this["event_" + action](button));
     }
@@ -386,7 +395,7 @@ Share = (function(_super) {
   };
 
   Share.prototype.inject_html = function(instance) {
-    return instance.innerHTML = "<label class='entypo-export'><span>" + this.config.ui.button_text + "</span></label><div class='social load " + this.config.ui.flyout + "'><ul><li class='entypo-pinterest' data-network='pinterest'></li><li class='entypo-twitter' data-network='twitter'></li><li class='entypo-facebook' data-network='facebook'></li><li class='entypo-gplus' data-network='google_plus'></li><li class='entypo-paper-plane' data-network='email'></li></ul></div>";
+    return instance.innerHTML = "<span class='" + this.config.ui.icon + "'></span> <span>" + this.config.ui.button_text + "</span><div class='social load " + this.config.ui.flyout + "'><ul><li class='entypo-pinterest' data-network='pinterest'></li><li class='entypo-twitter' data-network='twitter'></li><li class='entypo-facebook' data-network='facebook'></li><li class='entypo-gplus' data-network='google_plus'></li><li class='entypo-paper-plane' data-network='email'></li></ul></div>";
   };
 
   Share.prototype.inject_facebook_sdk = function() {

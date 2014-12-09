@@ -53,8 +53,10 @@ class Share extends ShareUtils
 
   setup: (element, opts) ->
     ## Record all instances
-    instances = document.querySelectorAll(element) # TODO: Use more efficient method.
-
+    if element.nodeType
+      instances = [element]
+    else
+      instances = document.querySelectorAll(element) # TODO: Use more efficient method.
     ## Extend config object
     @extend(@config, opts, true)
 
@@ -79,7 +81,10 @@ class Share extends ShareUtils
 
   setup_instance: (element, index) ->
     ## Get instance - (Note: Reload Element. gS/qSA doesn't support live NodeLists)
-    instance = document.querySelectorAll(element)[index] # TODO: Use more efficient method.
+    if element.nodeType
+      instance = element
+    else
+      instance = document.querySelectorAll(element)[index] # TODO: Use more efficient method.
 
     ## Hide instance
     @hide(instance)
@@ -88,23 +93,23 @@ class Share extends ShareUtils
     @add_class(instance, "sharer-#{index}")
 
     ## Get instance - (Note: Reload Element. gS/qSA doesn't support live NodeLists)
-    instance = document.querySelectorAll(element)[index] # TODO: Use more efficient method.
+    # instance = document.querySelectorAll(element)[index] # TODO: Use more efficient method.
 
     ## Inject HTML and CSS
-    @inject_css(instance)
+    # @inject_css(instance)
     @inject_html(instance)
 
     ## Show instance
     @show(instance)
 
-    label    = instance.getElementsByTagName("label")[0]
+    # label    = instance.getElementsByTagName("span")[0]
     button   = instance.getElementsByClassName("social")[0]
     networks = instance.getElementsByTagName('li')
 
     @add_class(button, "networks-#{@config.enabled_networks}")
 
     ## Add listener to activate buttons
-    label.addEventListener "click", => @event_toggle(button)
+    instance.addEventListener "click", => @event_toggle(button)
 
     ## Add listener to activate networks and close button
     _this = @
@@ -150,7 +155,12 @@ class Share extends ShareUtils
   toggle: -> @public("toggle")
 
   public: (action) ->
-    for instance, index in document.querySelectorAll(@element)
+    if @element.nodeType
+      elements = [@element]
+    else
+      elements = document.querySelectorAll(@element)
+    
+    for instance, index in elements
       button = instance.getElementsByClassName("social")[0]
       @["event_#{action}"](button)
 
@@ -231,7 +241,7 @@ class Share extends ShareUtils
       @el.head.appendChild(meta)
 
   inject_html: (instance) ->
-    instance.innerHTML = "<label class='entypo-export'><span>#{@config.ui.button_text}</span></label><div class='social load #{@config.ui.flyout}'><ul><li class='entypo-pinterest' data-network='pinterest'></li><li class='entypo-twitter' data-network='twitter'></li><li class='entypo-facebook' data-network='facebook'></li><li class='entypo-gplus' data-network='google_plus'></li><li class='entypo-paper-plane' data-network='email'></li></ul></div>"
+    instance.innerHTML = "<span class='#{@config.ui.icon}'></span> <span>#{@config.ui.button_text}</span><div class='social load #{@config.ui.flyout}'><ul><li class='entypo-pinterest' data-network='pinterest'></li><li class='entypo-twitter' data-network='twitter'></li><li class='entypo-facebook' data-network='facebook'></li><li class='entypo-gplus' data-network='google_plus'></li><li class='entypo-paper-plane' data-network='email'></li></ul></div>"
 
   inject_facebook_sdk: ->
     if !window.FB && @config.networks.facebook.app_id && !@el.body.querySelector('#fb-root')
