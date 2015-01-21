@@ -223,7 +223,7 @@ Share = (function(_super) {
   };
 
   Share.prototype.setup_instance = function(element, index) {
-    var button, instance, network, networks, _i, _len, _results,
+    var button, instance, network, networks, _i, _len,
       _this = this;
     if (element.nodeType) {
       instance = element;
@@ -241,15 +241,27 @@ Share = (function(_super) {
       return _this.event_toggle(button);
     });
     _this = this;
-    _results = [];
     for (index = _i = 0, _len = networks.length; _i < _len; index = ++_i) {
       network = networks[index];
-      _results.push(network.addEventListener("click", function() {
+      network.addEventListener("click", function() {
         _this.event_network(instance, this);
         return _this.event_close(button);
-      }));
+      });
     }
-    return _results;
+    document.body.addEventListener("click", function(e) {
+      var bool, icon, text;
+      bool = _this.has_class(button, "active");
+      icon = _this.config.ui.icon;
+      text = _this.config.ui.button_text;
+      if (bool === true && e.target.className !== icon && e.target.innerHTML !== text) {
+        return _this.event_close(button);
+      }
+    });
+    return window.onscroll = function() {
+      if (button.getBoundingClientRect().bottom < 0) {
+        return _this.event_close(button);
+      }
+    };
   };
 
   Share.prototype.event_toggle = function(button) {

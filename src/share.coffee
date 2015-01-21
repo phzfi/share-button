@@ -118,11 +118,22 @@ class Share extends ShareUtils
         _this.event_network(instance, @)
         _this.event_close(button)
 
+    ## Add click listener to the body
+    document.body.addEventListener "click", (e) ->
+      bool = _this.has_class(button, "active")
+      icon = _this.config.ui.icon
+      text = _this.config.ui.button_text
+      if bool is on and e.target.className != icon and e.target.innerHTML != text
+        _this.event_close(button)
+
+    ## Add onscroll listener to the window
+    window.onscroll = () ->
+      if button.getBoundingClientRect().bottom < 0
+        _this.event_close(button)
 
   ##########
   # EVENTS #
   ##########
-
 
   event_toggle: (button) ->
     if @has_class(button, "active")
@@ -136,7 +147,8 @@ class Share extends ShareUtils
 
     @add_class(button, "active")
 
-  event_close: (button) -> @remove_class(button, "active")
+  event_close: (button) ->
+    @remove_class(button, "active")
 
   event_network: (instance, network) ->
     name = network.getAttribute("data-network")
