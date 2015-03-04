@@ -76,7 +76,7 @@ ShareUtils = (function() {
   };
 
   ShareUtils.prototype.show = function(el) {
-    return el.style.display = "initial";
+    return el.style.display = "inline-block";
   };
 
   ShareUtils.prototype.has_class = function(el, class_name) {

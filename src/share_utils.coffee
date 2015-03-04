@@ -56,7 +56,7 @@ class ShareUtils
     el.style.display = "none"
 
   show: (el) ->
-    el.style.display = "initial"
+    el.style.display = "inline-block"
 
   has_class: (el, class_name) ->
     el.classList.contains(class_name)
